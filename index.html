@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Which Local River Are You?</title>
+  <style>
+    :root {
+      --primary: #2d5a27;
+      --primary-hover: #1e3d1a;
+      --bg: #f4f7f4;
+      --card-bg: #ffffff;
+      --text: #2c3e50;
+      --border: #e0e6e0;
+      --accent: #d97706;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 650px;
+      width: 100%;
+      background: var(--card-bg);
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+      align-self: center;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 25px;
+      border-bottom: 2px solid var(--border);
+      padding-bottom: 15px;
+    }
+
+    h1 {
+      color: var(--primary);
+      font-size: 1.8rem;
+      margin-bottom: 8px;
+    }
+
+    p.subtitle {
+      color: #666;
+      font-size: 0.95rem;
+    }
+
+    .progress-bar {
+      height: 6px;
+      background: var(--border);
+      border-radius: 3px;
+      margin-bottom: 25px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: var(--primary);
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+
+    .question-card {
+      display: none;
+    }
+
+    .question-card.active {
+      display: block;
+    }
+
+    .question-title {
+      font-size: 1.2rem;
+      font-weight: 600;
+      margin-bottom: 15px;
+      color: var(--primary);
+    }
+
+    .options {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .option-btn {
+      background: #f8faf8;
+      border: 1px solid var(--border);
+      padding: 12px 16px;
+      border-radius: 8px;
+      text-align: left;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      color: var(--text);
+    }
+
+    .option-btn:hover {
+      background: #eaf2ea;
+      border-color: var(--primary);
+    }
+
+    .result-card {
+      display: none;
+      text-align: left;
+    }
+
+    .result-card.active {
+      display: block;
+    }
+
+    .result-title {
+      color: var(--primary);
+      font-size: 1.6rem;
+      margin-bottom: 15px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 10px;
+    }
+
+    .result-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 15px;
+    }
+
+    .tag {
+      background: #eaf2ea;
+      color: var(--primary);
+      padding: 4px 10px;
+      border-radius: 15px;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+
+    .result-description {
+      font-size: 1.05rem;
+      line-height: 1.7;
+      margin-bottom: 25px;
+      white-space: pre-line;
+    }
+
+    .restart-btn {
+      display: block;
+      width: 100%;
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 12px;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-align: center;
+      transition: background 0.2s;
+    }
+
+    .restart-btn:hover {
+      background: var(--primary-hover);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <header>
+      <h1>Which local river are you?</h1>
+      <p class="subtitle">(personality types)</p>
+    </header>
+
+    <div class="progress-bar" id="progress-bar">
+      <div class="progress-fill" id="progress-fill"></div>
+    </div>
+
+    <!-- Quiz Questions -->
+    <div id="quiz-container">
+      
+      <!-- Question 1 -->
+      <div class="question-card active" data-q="0">
+        <div class="question-title">What do you like to do for fun?</div>
+        <div class="options">
+          <button class="option-btn" onclick="selectOption(['batten'])">Go fishing</button>
+          <button class="option-btn" onclick="selectOption(['otter'])">Go on long bike rides</button>
+          <button class="option-btn" onclick="selectOption(['winooski'])">Visit the shops in the Winooski circle</button>
+          <button class="option-btn" onclick="selectOption(['cuyahoga'])">Have a bonfire with friends</button>
+          <button class="option-btn" onclick="selectOption(['connecticut'])">Go hiking</button>
+          <button class="option-btn" onclick="selectOption(['lamoille'])">Have a chill day at the lake</button>
+        </div>
+      </div>
+
+      <!-- Question 2 -->
+      <div class="question-card" data-q="1">
+        <div class="question-title">What are you up to when it is raining?</div>
+        <div class="options">
+          <button class="option-btn" onclick="selectOption(['cuyahoga'])">Playing board games…but in a fiercely competitive way</button>
+          <button class="option-btn" onclick="selectOption(['otter'])">Reading</button>
+          <button class="option-btn" onclick="selectOption(['winooski'])">Hanging out with pets</button>
+          <button class="option-btn" onclick="selectOption(['lamoille'])">Crafting</button>
+          <button class="option-btn" onclick="selectOption(['batten'])">At the gym</button>
+          <button class="option-btn" onclick="selectOption(['connecticut'])">Day dreaming about my next camping trip or hike</button>
+        </div>
+      </div>
+
+      <!-- Question 3 -->
+      <div class="question-card" data-q="2">
+        <div class="question-title">What kind of shoes are you wearing on a daily basis?</div>
+        <div class="options">
+          <button class="option-btn" onclick="selectOption(['connecticut'])">Sandals that I can also wear when swimming</button>
+          <button class="option-btn" onclick="selectOption(['batten', 'cuyahoga'])">Sneakers</button>
+          <button class="option-btn" onclick="selectOption(['lamoille', 'winooski'])">Blundstones or a hiking boot situation</button>
+          <button class="option-btn" onclick="selectOption(['otter'])">Depends on my outfit…</button>
+        </div>
+      </div>
+
+      <!-- Question 4 -->
+      <div class="question-card" data-q="3">
+        <div class="question-title">Where do you grocery shop?</div>
+        <div class="options">
+          <button class="option-btn" onclick="selectOption(['lamoille'])">City market / local coop</button>
+          <button class="option-btn" onclick="selectOption(['cuyahoga'])">Shaws</button>
+          <button class="option-btn" onclick="selectOption(['otter'])">Hannaford</button>
+          <button class="option-btn" onclick="selectOption(['connecticut'])">I have a CSA</button>
+          <button class="option-btn" onclick="selectOption(['winooski'])">Farm stands and farmer’s market</button>
+          <button class="option-btn" onclick="selectOption(['batten'])">Foraging, fishing, and gardening</button>
+        </div>
+      </div>
+
+      <!-- Question 5 -->
+      <div class="question-card" data-q="4">
+        <div class="question-title">How do you start the day?</div>
+        <div class="options">
+          <button class="option-btn" onclick="selectOption(['lamoille', 'otter'])">With a cozy drink</button>
+          <button class="option-btn" onclick="selectOption(['cuyahoga'])">With a to do list</button>
+          <button class="option-btn" onclick="selectOption(['batten', 'connecticut'])">With a big breakfast so I’m ready for any adventures that come</button>
+          <button class="option-btn" onclick="selectOption(['winooski'])">A nice outdoor walk</button>
+        </div>
+      </div>
+
+      <!-- Question 6 -->
+      <div class="question-card" data-q="5">
+        <div class="question-title">If you’re dealing with a difficult situation, how do you handle it?</div>
+        <div class="options">
+          <button class="option-btn" onclick="selectOption(['otter', 'connecticut'])">Talk to my friends to process what is going on, then make a game plan</button>
+          <button class="option-btn" onclick="selectOption(['cuyahoga', 'batten'])">Follow my intuition and directly confront what is happening</button>
+          <button class="option-btn" onclick="selectOption(['lamoille', 'winooski'])">Assume the best: the situation is difficult, but it will probably turn out all right</button>
+        </div>
+      </div>
+
+      <!-- Question 7 -->
+      <div class="question-card" data-q="6">
+        <div class="question-title">Do you think people can make meaningful environmental changes in our lifetime?</div>
+        <div class="options">
+          <button class="option-btn" onclick="selectOption(['winooski', 'batten'])">Definitely</button>
+          <button class="option-btn" onclick="selectOption(['cuyahoga', 'connecticut'])">It’s complicated</button>
+          <button class="option-btn" onclick="selectOption(['otter', 'winooski'])">No shot</button>
+        </div>
+      </div>
+
+      <!-- Question 8 -->
+      <div class="question-card" data-q="7">
+        <div class="question-title">What is your favorite season?</div>
+        <div class="options">
+          <button class="option-btn" onclick="selectOption(['cuyahoga'])">Summer</button>
+          <button class="option-btn" onclick="selectOption(['batten', 'winooski'])">Spring</button>
+          <button class="option-btn" onclick="selectOption(['connecticut'])">Fall</button>
+          <button class="option-btn" onclick="selectOption(['otter'])">Winter</button>
+          <button class="option-btn" onclick="selectOption(['lamoille'])">No preference</button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Results Section -->
+    <div id="result-container" class="result-card">
+      <h2 id="result-title" class="result-title"></h2>
+      <div id="result-tags" class="result-tags"></div>
+      <div id="result-description" class="result-description"></div>
+      <button class="restart-btn" onclick="restartQuiz()">Take Quiz Again</button>
+    </div>
+
+  </div>
+
+  <script>
+    const scores = {
+      winooski: 0,
+      lamoille: 0,
+      otter: 0,
+      connecticut: 0,
+      batten: 0,
+      cuyahoga: 0
+    };
+
+    const resultsData = {
+      winooski: {
+        title: "You’re the ONION/WINOOKSKI River!",
+        tags: ["Golden Retriever", "Warm, Empathetic, Optimistic", "Town Person", "Supporting Local Businesses"],
+        desc: "Dare I say…a bit iconic. You love all things local, and have a warm, empathetic, and optimistic personality. You are known among your friends to be a bit dramatic…last time you got emotional, you flooded all of Montpelier, for example. But your kindness and diverse networks of friends mean that Vermonters across the state rallied to support you after your little outburst. You have a strong enough sense of identity to not always go with the flow."
+      },
+      lamoille: {
+        title: "You got…the LA MOILE RIVER!",
+        tags: ["Chill", "Camping", "Named After Sea Gulls", "Swimming Holes", "Along the Rail Trail"],
+        desc: "You are a chill river where people love to do recreational activities and enjoy swimming holes. Your banks are relatively deep, protecting your waters from the wind. You flow into Lake Champlain and coast beside the Vermont Rail Trail. You’re chill and go with the flow."
+      },
+      otter: {
+        title: "Hello, Otter Creek!",
+        tags: ["Posh", "Floods A Lot", "Sensitive", "Cry Baby"],
+        desc: "You are a posh, sensitive river, flowing through classic New England towns like Middlebury and Vergennes. You love to set a mood, and you intensely flood when it rains…once causing millions of dollars of damage in Rutland, even. Your reflective, considerate personality makes you one of the most recognizable rivers in Vermont. People flock to you and build cozy businesses along your banks, even knowing that you are prone to intense moods. You are the Dark Academic of Vermont rivers: historic, broody, charismatic, and a bit dramatic."
+      },
+      connecticut: {
+        title: "You are the CONNECTICUT RIVER!",
+        tags: ["Hiking / Granola", "Sustainability", "Comfort", "Nature"],
+        desc: "Sitting along the border of Vermont and New Hampshire, you long for new adventures and crave connection with the outdoors. You are well travelled and always ready for a new quest. Some might describe your personality as “Granola,” or “GORPcore.” Beyond Vermont, you venture into the White Mountains and the Long Island sound, where you introduce up to 70% of fresh water flow.\n\nYou have a long, complicated history, including antagonism from settlers to early Natives peoples about your waters, being a key border between Canada and the US after the revolutionary war, logging troubles, and being nearly diverted to sustain Massachusetts’ water supply. Now, researchers at UMass Amherst use computational models to manage river flow rate, incorporating a balance of natural needs and human needs. This is emblematic of your personality: striving for balance and connection with both the human and natural worlds using unique tools."
+      },
+      batten: {
+        title: "You got…BATTEN KILL RIVER!",
+        tags: ["Fish Bro (Recreation)", "Pleonastic", "Covered Bridges"],
+        desc: "You may be wondering, “Batten Kill River…doesn’t “kill” in this context mean creek, therefore it is a redundant, pleonastic name?” Well, you’d be right! Batten Kill is known for its fly fishing scene and covered bridges. As the Batten Kill, you’re always down for some outdoor recreation, especially if it involves fishing with friends. You love a project, and get particular satisfaction when you can make something with your hands. You have a unique sense of environmentalism that combines sustainable use of resources with enjoyment."
+      },
+      cuyahoga: {
+        title: "You are the Cuyahoga River in Ohio!",
+        tags: ["Aries Personality Type / Fire Sign", "Action Oriented", "Give Two Dams", "Area of Concern", "Reformed Toxic"],
+        desc: "Based on the title of this quiz, I bet you thought you would get a local river…however, your fiery personality and ambitious drive mean that you are the Cuyahoga River in Ohio! This river has caught fire at least 14 times from industrial pollution…but that doesn’t mean that people (and rivers) can’t change. This river catching on fire was a major impetus for the US environmental movement! As a reformed toxic, you represent how action oriented planning can lead to progress. Even though you have made some changes, you are still an “area of concern.” Keep on using your industrious personality to find the life you want to live and inspire others around you to make change."
+      },
+      watershed: {
+        title: "You are a WATERSHED!",
+        tags: ["Avatar Type Beat", "Connection of Multiple Bodies of Water", "Meta / Prioritizes Diversity & Connectedness", "Can Be a Bit Hard to Talk To"],
+        desc: "Isn’t the idea that you could be one river antiquated? You are a WATERSHED! You prioritize connection and live your life in a way that transcends categorization. Vermont has 15 water shed regions, spanning size and complexity. You use your sense of deep connection to your surroundings and others to prioritize close personal relationships. On the other hand, this means some folks can find you a bit hard to talk to…your way of looking at things can be perceived as pretentious and unrelatable. Don’t let that stop you from connecting with your surroundings and deeply perceiving the world around you."
+      }
+    };
+
+    let currentQuestion = 0;
+    const totalQuestions = 8;
+
+    function selectOption(keys) {
+      keys.forEach(key => {
+        if (scores.hasOwnProperty(key)) {
+          scores[key]++;
+        }
+      });
+
+      currentQuestion++;
+      updateProgress();
+
+      if (currentQuestion < totalQuestions) {
+        showQuestion(currentQuestion);
+      } else {
+        showResult();
+      }
+    }
+
+    function showQuestion(index) {
+      document.querySelectorAll('.question-card').forEach(card => card.classList.remove('active'));
+      const activeCard = document.querySelector(`.question-card[data-q="${index}"]`);
+      if (activeCard) activeCard.classList.add('active');
+    }
+
+    function updateProgress() {
+      const percentage = (currentQuestion / totalQuestions) * 100;
+      document.getElementById('progress-fill').style.width = percentage + '%';
+    }
+
+    function showResult() {
+      document.getElementById('quiz-container').style.display = 'none';
+      document.getElementById('progress-bar').style.display = 'none';
+
+      let maxScore = -1;
+      let winningKey = '';
+      let isTie = false;
+
+      for (const [key, score] of Object.entries(scores)) {
+        if (score > maxScore) {
+          maxScore = score;
+          winningKey = key;
+          isTie = false;
+        } else if (score === maxScore && maxScore > 0) {
+          isTie = true;
+        }
+      }
+
+      // If scores are widely distributed or tied, trigger the secret watershed result
+      let result = (isTie || maxScore <= 2) ? resultsData.watershed : resultsData[winningKey];
+
+      document.getElementById('result-title').innerText = result.title;
+      
+      const tagsContainer = document.getElementById('result-tags');
+      tagsContainer.innerHTML = '';
+      result.tags.forEach(tag => {
+        const span = document.createElement('span');
+        span.className = 'tag';
+        span.innerText = tag;
+        tagsContainer.appendChild(span);
+      });
+
+      document.getElementById('result-description').innerText = result.desc;
+      document.getElementById('result-container').classList.add('active');
+    }
+
+    function restartQuiz() {
+      for (let key in scores) scores[key] = 0;
+      currentQuestion = 0;
+      
+      document.getElementById('result-container').classList.remove('active');
+      document.getElementById('quiz-container').style.display = 'block';
+      document.getElementById('progress-bar').style.display = 'block';
+      
+      updateProgress();
+      showQuestion(0);
+    }
+  </script>
+</body>
+</html>
