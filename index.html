@@ -6,13 +6,14 @@
   <title>Which Local River Are You?</title>
   <style>
     :root {
-      --primary: #2d5a27;
-      --primary-hover: #1e3d1a;
-      --bg: #f4f7f4;
-      --card-bg: #ffffff;
-      --text: #2c3e50;
-      --border: #e0e6e0;
-      --accent: #d97706;
+      /* Wes Anderson - Rushmore1 Palette */
+      --primary: #0B775E;        /* Forest Green */
+      --primary-hover: #085946;  /* Darker Green */
+      --bg: #EABE94;             /* Soft Tan / Cream */
+      --card-bg: #FFFDF9;        /* Warm Off-White */
+      --text: #35274A;           /* Dark Plum */
+      --border: #E1BD6D;         /* Mustard Gold */
+      --accent: #F2300F;         /* Crimson Red */
     }
 
     * {
@@ -38,8 +39,9 @@
       background: var(--card-bg);
       padding: 30px;
       border-radius: 12px;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+      box-shadow: 0 6px 20px rgba(53, 39, 74, 0.15);
       align-self: center;
+      border: 2px solid var(--border);
     }
 
     header {
@@ -56,14 +58,16 @@
     }
 
     p.subtitle {
-      color: #666;
+      color: var(--text);
+      opacity: 0.8;
       font-size: 0.95rem;
+      font-style: italic;
     }
 
     .progress-bar {
-      height: 6px;
-      background: var(--border);
-      border-radius: 3px;
+      height: 8px;
+      background: #f1e2c9;
+      border-radius: 4px;
       margin-bottom: 25px;
       overflow: hidden;
     }
@@ -97,7 +101,7 @@
     }
 
     .option-btn {
-      background: #f8faf8;
+      background: #fdfaf3;
       border: 1px solid var(--border);
       padding: 12px 16px;
       border-radius: 8px;
@@ -109,8 +113,9 @@
     }
 
     .option-btn:hover {
-      background: #eaf2ea;
+      background: #f5eaaf;
       border-color: var(--primary);
+      transform: translateY(-1px);
     }
 
     .result-card {
@@ -125,8 +130,8 @@
     .result-title {
       color: var(--primary);
       font-size: 1.6rem;
-      margin-bottom: 15px;
-      border-bottom: 1px solid var(--border);
+      margin-bottom: 10px;
+      border-bottom: 2px solid var(--primary);
       padding-bottom: 10px;
     }
 
@@ -138,8 +143,9 @@
     }
 
     .tag {
-      background: #eaf2ea;
-      color: var(--primary);
+      background: #fdf2e9;
+      color: var(--accent);
+      border: 1px solid var(--accent);
       padding: 4px 10px;
       border-radius: 15px;
       font-size: 0.85rem;
@@ -151,6 +157,32 @@
       line-height: 1.7;
       margin-bottom: 25px;
       white-space: pre-line;
+    }
+
+    /* Runner Up Styling */
+    .runner-up-box {
+      margin-top: 25px;
+      padding: 20px;
+      background: #faf5ed;
+      border: 2px dashed var(--border);
+      border-radius: 8px;
+      margin-bottom: 25px;
+    }
+
+    .runner-up-header {
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--accent);
+      font-weight: 700;
+      margin-bottom: 5px;
+    }
+
+    .runner-up-title {
+      font-size: 1.2rem;
+      color: var(--primary);
+      margin-bottom: 8px;
+      font-weight: 600;
     }
 
     .restart-btn {
@@ -288,6 +320,15 @@
       <h2 id="result-title" class="result-title"></h2>
       <div id="result-tags" class="result-tags"></div>
       <div id="result-description" class="result-description"></div>
+
+      <!-- Secondary / Runner Up Container -->
+      <div id="runner-up-container" class="runner-up-box" style="display: none;">
+        <div class="runner-up-header">Close Second Place</div>
+        <div id="runner-up-title" class="runner-up-title"></div>
+        <div id="runner-up-tags" class="result-tags"></div>
+        <div id="runner-up-description" class="result-description" style="font-size: 0.95rem; margin-bottom: 0;"></div>
+      </div>
+
       <button class="restart-btn" onclick="restartQuiz()">Take Quiz Again</button>
     </div>
 
@@ -376,35 +417,64 @@
       document.getElementById('quiz-container').style.display = 'none';
       document.getElementById('progress-bar').style.display = 'none';
 
-      let maxScore = -1;
-      let winningKey = '';
-      let isTie = false;
+      // Sort rivers by score in descending order
+      const sortedScores = Object.entries(scores).sort((a, b) => b[1] - a[1]);
+      
+      const firstScore = sortedScores[0][1];
+      const secondScore = sortedScores[1][1];
 
-      for (const [key, score] of Object.entries(scores)) {
-        if (score > maxScore) {
-          maxScore = score;
-          winningKey = key;
-          isTie = false;
-        } else if (score === maxScore && maxScore > 0) {
-          isTie = true;
-        }
+      // Watershed triggers ONLY if top score is 1 point or if 3+ rivers share the top score
+      const topTies = sortedScores.filter(item => item[1] === firstScore);
+      
+      let topResultKey = sortedScores[0][0];
+      let runnerUpKey = sortedScores[1][0];
+
+      if (firstScore <= 1 || topTies.length >= 3) {
+        // True scattered answers -> Watershed!
+        renderResultCard(resultsData.watershed, null);
+      } else {
+        // Render Top Match + Runner Up if runner up scored at least 1 point
+        const primaryData = resultsData[topResultKey];
+        const runnerUpData = (secondScore > 0) ? resultsData[runnerUpKey] : null;
+        renderResultCard(primaryData, runnerUpData);
       }
+    }
 
-      // If scores are widely distributed or tied, trigger the secret watershed result
-      let result = (isTie || maxScore <= 2) ? resultsData.watershed : resultsData[winningKey];
-
-      document.getElementById('result-title').innerText = result.title;
+    function renderResultCard(primary, runnerUp) {
+      // Primary Result
+      document.getElementById('result-title').innerText = primary.title;
       
       const tagsContainer = document.getElementById('result-tags');
       tagsContainer.innerHTML = '';
-      result.tags.forEach(tag => {
+      primary.tags.forEach(tag => {
         const span = document.createElement('span');
         span.className = 'tag';
         span.innerText = tag;
         tagsContainer.appendChild(span);
       });
 
-      document.getElementById('result-description').innerText = result.desc;
+      document.getElementById('result-description').innerText = primary.desc;
+
+      // Runner Up Result
+      const runnerUpBox = document.getElementById('runner-up-container');
+      if (runnerUp) {
+        document.getElementById('runner-up-title').innerText = runnerUp.title;
+        
+        const ruTagsContainer = document.getElementById('runner-up-tags');
+        ruTagsContainer.innerHTML = '';
+        runnerUp.tags.forEach(tag => {
+          const span = document.createElement('span');
+          span.className = 'tag';
+          span.innerText = tag;
+          ruTagsContainer.appendChild(span);
+        });
+
+        document.getElementById('runner-up-description').innerText = runnerUp.desc;
+        runnerUpBox.style.display = 'block';
+      } else {
+        runnerUpBox.style.display = 'none';
+      }
+
       document.getElementById('result-container').classList.add('active');
     }
 
